@@ -18,7 +18,7 @@ subtitle = "Doing research in WEIRD lab @ UW CS"
 [sidebar.avatar]
 enabled = true
 local = true
-src = "img/img_0103.png"
+src = "img/IMG_0103.png"
 
 [article]
 math = true
