@@ -6,10 +6,6 @@ aliases:
 - about-us
 - about-hugo
 - contact
-
-[comments]: # (  license: CC BY-NC-ND)
-
-[comments]: # (  lastmod: '2020-10-09')
   menu:
   main:
   weight: -90
