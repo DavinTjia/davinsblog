@@ -21,7 +21,7 @@ local = true
 src = "img/avatar.png"
 
 [article]
-math = false
+math = true
 readingTime = true
 
 [article.license]
@@ -64,7 +64,7 @@ src = ""
 
 [colorScheme]
 toggle = true
-default = "auto"
+default = "dark"
 
 [imageProcessing.cover]
 enabled = true
