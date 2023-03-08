@@ -1,14 +1,9 @@
 ---
 title: Deep Robotics Learning (1) - Introduction and Policy Gradient
-description: A note on deep robotics learning
+description: A note on deep robotics learning (UW CSE 599 G1)
 slug: drl
 date: 2023-03-07 00:00:00+0000
 image: cover.jpg
-links:
-- title: GitHub
-  description: GitHub is the world's largest software development platform.
-  website: https://github.com
-  image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 categories:
 - Lecture Notes Expansion
 tags:
@@ -85,6 +80,8 @@ where a robot only needs to master one tasks well and efficiently or medicine wh
 are not (yet) good areas where DRL should be prioritized. 
 
 ## Policy Gradient
+
+
 
 
 
