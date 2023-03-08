@@ -26,7 +26,7 @@ questions about the content of this post. Thank you!
 To start, I would like to discuss some motivation on why reinforcement learning and why deep learning. 
 
 Although the concepts of learning is not new, the field robotics have much longer history in the classical methods 
-such as planning. However, without learning, robotics is a much more complicated and specific tasks and requires multiple 
+such. However, without learning, robotics is a much more complicated and specific tasks and requires multiple 
 layers of engineering across different discipline, For example, robots that have been built and coded to navigate one 
 environment might fail entirely at another (although similar) environment. This is because hard coded functionality, 
 perception, and planning is much less generalizable in exchange for precision and reliability. However, such domain-specific
@@ -48,12 +48,12 @@ environments, and with different calibration. There is lack of a general real-wo
 generally agree on like ImageNet in CV in early 2010s. For 3., it is hard to label the data. For example, a state 
 might be good in one sequence of action but might be horrible in another sequence of action. The label of a particular 
 data points need to take in multiple factors for considerations such as current goal, current state and available actions, 
-and current trajectory. This make supervised learning generally an unsuitable way for robot to learn. 
+and current trajectory. This make supervised learning generally an unsuitable way for robot to learn novel tasks. 
 
 Reinforcement learning on the other hand is a much more natural way to learn a sequence of action for a goal. In 
 psychology there are two main category of conditioning: classical and operant. Classical conditioning is very well
 known thanks to Pavlov's dog. Operant conditioning, in simple term, refers to using rewards or punishments to incentive
 good behaviors. B.F. Skinner, one of the main figure in behavior psychology, believes that all behavior is learned and 
 novel reinforcement shapes novel behaviors. Now, if only there is a way that we can use rewards or punishments to 
-reinforce the robots to behave. Reinforcement learning perfectly fits that description. The main idea of RL is for 
-the robot learns a policy of which it acts on to maximize the reward. 
+reinforce the robots to behave. Reinforcement learning perfectly fits that description. The main idea of RL is exactly for 
+the robot learns a policy of which it acts on to maximize the reward.
