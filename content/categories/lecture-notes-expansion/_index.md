@@ -1,5 +1,5 @@
 ---
-title: Lecture Note Expansion
+title: Lecture Notes Expansion
 description: Expanded commentaries and notes on lectures that I have taken
 image:
 
