@@ -1,5 +1,5 @@
 ---
-title: Deep Robotics Learning
+title: Deep Robotics Learning (1): Introduction and Policy Gradient
 description: A note on deep robotics learning
 slug: drl
 date: 2023-03-07 00:00:00+0000
@@ -9,6 +9,7 @@ categories:
 tags:
 - Reinforcement Learning
 - Deep Learning
+- CSE599 G1 Note
 ---
 
 In this blog post, I would be going over some topics on deep reinforcement learning with focus on robotics learning. I would 
@@ -75,7 +76,10 @@ interpretability, data inefficiency, and sensitivity to hyperparameters still ap
 deep reinforcement learning (or RL in general) are not suitable for tasks that requires high precisions.
 The values from the output is often just an estimation (albeit a good one) and many other factors 
 including sampling strategy can all affect the final trajectories. In industry such as manufacturing
-where a robot only needs to master one tasks or medicine where safety and interpretability is critical
+where a robot only needs to master one tasks well and efficiently or medicine where safety and interpretability is critical
 are not (yet) good areas where DRL should be prioritized. 
+
+## Policy Gradient
+
 
 
