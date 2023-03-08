@@ -4,6 +4,11 @@ description: A note on deep robotics learning
 slug: drl
 date: 2023-03-07 00:00:00+0000
 image: cover.jpg
+links:
+- title: GitHub
+  description: GitHub is the world's largest software development platform.
+  website: https://github.com
+  image: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
 categories:
 - Lecture Notes Expansion
 tags:
