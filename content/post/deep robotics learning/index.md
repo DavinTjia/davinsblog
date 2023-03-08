@@ -3,7 +3,7 @@ title: Deep Robotics Learning
 description: A note on deep robotics learning
 slug: drl
 date: 2023-03-07 00:00:00+0000
-image: cover.gif
+image: cover.jpg
 categories:
 - Lecture Notes Expansion
 tags:
