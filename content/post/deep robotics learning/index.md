@@ -1,17 +1,15 @@
-+++
-title: "Deep Robotics Learning"
-description: "Welcome to Hugo Theme Stack"
-slug: "hello-world"
-date: "2023-03-07"
-image: "cover.gif"
-categories = [
-    "Lecture Notes Expansion"
-]
-tags = [
-    "Reinforcement Learning",
-    "Deep Learning"
-]
-+++
+---
+title: Deep Robotics Learning
+description: A note on deep robotics learning
+slug: drl
+date: 2023-03-07 00:00:00+0000
+image: cover.gif
+categories:
+- Lecture Notes Expansion
+tags:
+- Reinforcement Learning
+- Deep Learning
+---
 
 In this blog post, I would be going over some topics on deep reinforcement learning with focus on robotics learning. I would 
 expect this to be spanned across a series of posts. The content of these posts is my takeaway and additional exploration 
