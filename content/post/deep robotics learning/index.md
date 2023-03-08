@@ -25,8 +25,7 @@ questions about the content of this post. Thank you!
 
 To start, I would like to discuss some motivation on why reinforcement learning and why deep learning. 
 
-Although the concepts of learning is not new, the field robotics have much longer history in the classical methods 
-such. However, without learning, robotics is a much more complicated and specific tasks and requires multiple 
+Although the concepts of learning is not new, the field robotics have much longer history in the classical methods. However, without learning, robotics is a much more complicated and specific tasks and requires multiple 
 layers of engineering across different discipline, For example, robots that have been built and coded to navigate one 
 environment might fail entirely at another (although similar) environment. This is because hard coded functionality, 
 perception, and planning is much less generalizable in exchange for precision and reliability. However, such domain-specific
@@ -55,5 +54,28 @@ psychology there are two main category of conditioning: classical and operant. C
 known thanks to Pavlov's dog. Operant conditioning, in simple term, refers to using rewards or punishments to incentive
 good behaviors. B.F. Skinner, one of the main figure in behavior psychology, believes that all behavior is learned and 
 novel reinforcement shapes novel behaviors. Now, if only there is a way that we can use rewards or punishments to 
-reinforce the robots to behave. Reinforcement learning perfectly fits that description. The main idea of RL is exactly for 
-the robot learns a policy of which it acts on to maximize the reward.
+reinforce the robots to behave. Reinforcement learning perfectly fits that description. (I would assume
+most readers have basic knowledge in RL from now on).
+
+If I successfully (kinda) convince you that learning, specifically reinforcement learning, might be 
+part of the solution to robotics, the next step is to get you believe that we should also combine
+deep learning with RL. One most obvious example is [AlphaGo](https://www.nature.com/articles/nature16961).
+The main ideas of AlphaGo is combining deep Q-learning with Monte Carlo Tree Search (MCTS). A 
+non-neural way to do Q-learning is to uses a dictionary (or some other cleverer data structure) to 
+store the values of all the state-action pairs. However, this quickly become intractable when the 
+possible combinations exceed the number of atoms in the universe like the game of Go. It would be 
+much better if we have a parameterized function that could takes in state-action pairs and spits out
+their (estimated) values. Similarly, hand-crafting the agents and models are difficult and expensive.
+Using a neural network to represent the models would be much simpler to do (sometimes it is as 
+easy as importing an out-of-the-box ResNet from the library!). 
+
+Now at the end of introduction, I would also like to raise some counterarguments of why we shouldn't
+always be using deep reinforcement learning. Typical problems with deep learning such as low 
+interpretability, data inefficiency, and sensitivity to hyperparameters still apply. In addition, 
+deep reinforcement learning (or RL in general) are not suitable for tasks that requires high precisions.
+The values from the output is often just an estimation (albeit a good one) and many other factors 
+including sampling strategy can all affect the final trajectories. In industry such as manufacturing
+where a robot only needs to master one tasks or medicine where safety and interpretability is critical
+are not (yet) good areas where DRL should be prioritized. 
+
+
