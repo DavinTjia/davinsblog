@@ -21,3 +21,4 @@ class that I think it deserves documentation of some form. That is the motivatio
 the results of the slides of the lectures or Abhishek Gupta's delivery. Please contact me if you have any concerns or 
 questions about the content of this post. Thank you!
 
+To start, I would like to discuss some motivation on why deep learning for reinforcement learning. 
