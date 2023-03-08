@@ -1,5 +1,5 @@
 ---
-title: Deep Robotics Learning (1): Introduction and Policy Gradient
+title: Deep Robotics Learning (1) - Introduction and Policy Gradient
 description: A note on deep robotics learning
 slug: drl
 date: 2023-03-07 00:00:00+0000
