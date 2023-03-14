@@ -82,9 +82,11 @@ are not (yet) good areas where DRL should be prioritized.
 ## Policy Gradient
 
 To use deep learning on reinforcement learning, identifying objective function for optimization is the first crucial step. Recall that in RL we have a policy $\pi$ that takes a state $s$ as input and output an action $a$. The hope is that the trajectories $\tau$'s (a sequence of states and actions) generated according $\pi$ would optimize the return $r$. This gives us
-$$
+
+$
 \max _{\theta} \mathbb{E } _{\tau \sim \pi_{\theta}} [\sum^{T }_{t = 0 } r(s_t, a_t)]
-$$
+$
+
 There are many techniques that can be used to optimize over this objective functions. Different techniques requires different modifications to the objectives and results in different algorithms. Here, we would be focusing on using gradient *asscent*, which in the setting of RL is often known as **policy gradient**.
 
 
