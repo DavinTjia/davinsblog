@@ -10,11 +10,11 @@ tags:
 - Reinforcement Learning
 - Deep Learning
 - CSE599 G1 Note
-katexOptions: {
-  displayMode: true,
-  macros: {},
-  extensions: ["aligned"],
-},
+options:
+  katexOptions:
+    displayMode: true
+    macros: {}
+    extensions: ["aligned"]
 ---
 
 In this blog post, I would be going over some topics on deep reinforcement learning with focus on robotics learning. I would 
