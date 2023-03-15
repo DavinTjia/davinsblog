@@ -82,13 +82,45 @@ are not (yet) good areas where DRL should be prioritized.
 ## Policy Gradient
 
 To use deep learning on reinforcement learning, identifying objective function for optimization is the first crucial step. Recall that in RL we have a policy $\pi$ that takes a state $s$ as input and output an action $a$. The hope is that the trajectories $\tau$'s (a sequence of states and actions) generated according $\pi$ would optimize the return $r$. This gives us
-
 $$
-\mathbb{E}
+\max_{\theta} \mathbb{E } _{\tau \sim \pi_{\theta}} [\sum^T_{t = 0 } r (s_t, a_t)]
 $$
-
-There are many techniques that can be used to optimize over this objective functions. Different techniques requires different modifications to the objectives and results in different algorithms. Here, we would be focusing on using gradient *asscent*, which in the setting of RL is often known as **policy gradient**.
-
-
-
-
+There are many techniques that can be used to optimize over this objective functions. Different techniques requires different modifications to the objectives and results in different algorithms. Here, we would be focusing on using gradient *asscent*, which in the setting of RL is often known as **policy gradient**. Equivalently, the continuous version of the sum above is given by 
+$$
+    J(\theta) = \int p_{\theta } (\tau ) R(\tau )d\tau 
+$$
+This induce the REINFORCE algorithm where we estimate the policy gradient with likelihood ratio
+$$
+    \begin{align*}
+       \nabla _{\theta } J(\theta) &= \nabla_{\theta} \int p_{\theta } (\tau ) R(\tau )d\tau \\ 
+       &=  \int \nabla_{\theta} p_{\theta } (\tau ) R(\tau )d\tau \\
+       &=   \int \frac{p _{\theta}(\tau)}{p_\theta (\tau) } \nabla_{\theta} p_{\theta } (\tau ) R(\tau )d\tau \\
+       &=   \int \frac{p _{\theta}(\tau)}{ p_\theta (\tau) } \nabla_{\theta} p_{\theta } (\tau ) R(\tau )d\tau \\
+       &=  \int p_\theta (\tau) \nabla_{\theta} \log p_{\theta } (\tau ) R(\tau )d\tau \quad \text{REINFORCE trick} \\
+       &= \mathbb{E } _{p_{\theta }(\tau )} [ \nabla_{\theta} \log p_{\theta }(\tau )R(\tau)]
+    \end{align*}
+$$
+Now we unroll the definition of $p_{\theta }(\tau )$
+$$
+p_{\theta }(\tau ) = p(s_0) \prod^{T- 1 }_{t= 0 }p(s_{t+ 1} | s_t, a_t) \pi(a_t |s_t)
+$$
+where $p$ is the environment dynamics (an abuse of notation) and $\pi$ is the policy. Using property of log, we have 
+$$
+\begin{align*}
+\log p_{\theta }(\tau ) &= \log p(s_0) +  \sum^{T- 1 }_{t= 0 } (\log p(s_{t+ 1} | s_t, a_t) + \log \pi(a_t |s_t)) \\
+ \nabla_{\theta} \log p_{\theta }(\tau ) &=  \nabla_{\theta} \log p(s_0) +  \sum^{T- 1 }_{t= 0 } ( \nabla_{\theta} \log p(s_{t+ 1} | s_t, a_t) +  \nabla_{\theta} \log \pi(a_t |s_t)) 
+\end{align*}
+$$
+Now, we assume a *model free* learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us  
+$$
+\begin{align*}
+ \nabla_{\theta} \log p_{\theta }(\tau ) &=  \nabla_{\theta} \log p(s_0) +  \sum^{T- 1 }_{t= 0 } ( \nabla_{\theta} \log p(s_{t+ 1} | s_t, a_t) +  \nabla_{\theta} \log \pi(a_t |s_t))  \\ 
+ &= 0 +  \sum^{T- 1 }_{t= 0 } (0 +  \nabla_{\theta} \log \pi(a_t |s_t)) \\ 
+ &= \sum^{T-1 }_{t =0}   \nabla_{\theta} \log \pi(a_t |s_t)
+\end{align*}
+$$
+We can then rewrite our objectives as 
+$$
+ \mathbb{E } _{p_{\theta }(\tau )} [ \nabla_{\theta} \log p_{\theta }(\tau )R(\tau)] =  \mathbb{E } _{p_{\theta }(\tau )} [  \sum^{T-1 }_{t =0}   \nabla_{\theta} \log \pi(a_t |s_t) \sum^{T}_{t=0}r(s_t, a_t)]
+$$
+where the reward $R$ collected along the trajectory $\tau$ is given by $r(s_t, a_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. We can approximate 
