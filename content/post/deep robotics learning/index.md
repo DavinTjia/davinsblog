@@ -85,3 +85,46 @@ To use deep learning on reinforcement learning, identifying objective function f
 $$
 \max\_{\theta} \mathbb{E}\_{\tau \sim \pi\_{\theta}} [\sum^T\_{t = 0 } r (s\_t, a\_t)]
 $$
+There are many techniques that can be used to optimize over this objective functions. Different techniques requires different modifications to the objectives and results in different algorithms. Here, we would be focusing on using gradient *asscent*, which in the setting of RL is often known as **policy gradient**. Equivalently, the continuous version of the sum above is given by 
+$$
+    J(\theta) = \int p\_{\theta } (\tau ) R(\tau )d\tau 
+$$
+This induce the REINFORCE algorithm where we estimate the policy gradient with likelihood ratio
+$$
+    \begin{align*}
+       \nabla \_{\theta } J(\theta) &= \nabla\_{\theta} \int p\_{\theta } (\tau ) R(\tau )d\tau \\ 
+       &=  \int \nabla\_{\theta} p\_{\theta } (\tau ) R(\tau )d\tau \\
+       &=   \int \frac{p \_{\theta}(\tau)}{p\_\theta (\tau) } \nabla\_{\theta} p\_{\theta } (\tau ) R(\tau )d\tau \\
+       &=   \int \frac{p \_{\theta}(\tau)}{ p\_\theta (\tau) } \nabla\_{\theta} p\_{\theta } (\tau ) R(\tau )d\tau \\
+       &=  \int p\_\theta (\tau) \nabla\_{\theta} \log p\_{\theta } (\tau ) R(\tau )d\tau \quad \text{REINFORCE trick} \\
+       &= \mathbb{E } \_{p\_{\theta }(\tau )} [ \nabla\_{\theta} \log p\_{\theta }(\tau )R(\tau)]
+    \end{align*}
+$$
+Now we unroll the definition of $p\_{\theta }(\tau )$
+$$
+p\_{\theta }(\tau ) = p(s\_0) \prod^{T- 1 }\_{t= 0 }p(s\_{t+ 1} | s\_t, a\_t) \pi(a\_t |s\_t)
+$$
+where $p$ is the environment dynamics (an abuse of notation) and $\pi$ is the policy. Using property of log, we have 
+$$
+\begin{align*}
+\log p\_{\theta }(\tau ) &= \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } (\log p(s\_{t+ 1} | s\_t, a\_t) + \log \pi(a\_t |s\_t)) \\
+ \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) 
+\end{align*}
+$$
+Now, we assume a *model free* learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us  
+$$
+\begin{align*}
+ \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t))  \\ 
+ &= 0 +  \sum^{T- 1 }\_{t= 0 } (0 +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) \\ 
+ &= \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t)
+\end{align*}
+$$
+We can then rewrite our objectives as 
+$$
+ \mathbb{E } \_{p\_{\theta }(\tau )} [ \nabla\_{\theta} \log p\_{\theta }(\tau )R(\tau)] =  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)]
+$$
+where the reward $R$ collected along the trajectory $\tau$ is given by $r(s\_t, a\_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. Although the later expectation seems intractable to compute,  we can approximate it with sampling !
+$$
+  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^N\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t=0}r(s\_t^i, a\_t^i)
+$$
+This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\tau} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent. 
