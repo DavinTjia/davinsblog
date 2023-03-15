@@ -157,9 +157,13 @@ $$
 \iint p\left(s\_t, a\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right)\left[b\left(s\_t\right)\right] d s\_t d a\_t &=\iint p\left(s\_t\right) \pi\_\theta\left(a\_t \mid s\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right)\left[b\left(s\_t\right)\right] d s\_t d a\_t \\\
 & =\int p\left(s\_t\right) b\left(s\_t\right) \int \pi\_\theta\left(a\_t \mid s\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t \\\
 & =\int p\left(s\_t\right) b\left(s\_t\right) \int \nabla\_\theta \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t \\\ 
-&=\int p\left(s\_t\right) b\left(s\_t\right) \nabla\_\theta \int \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t \\\
-&=\int p\left(s\_t\right) b\left(s\_t\right) \nabla\_\theta(1) d s\_t \\\
-&=0
+&=\int p\left(s\_t\right) b\left(s\_t\right) \nabla\_\theta \int \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t\\\
+&=\int p\left(s\_t\right) b\left(s\_t\right) \nabla\_\theta(1) d s\_t \quad \text{$\pi$ is a valid probability distribution}\\\
+&=0 \quad \text{derivative w.r.t any number is 0}
 \end{aligned}
 $$
-Indeed, this is a rare day in machine learning where adding the baseline term reduces the variance without trading off more bias.
+Indeed, this is a rare day in machine learning where adding the baseline term reduces the variance without trading off more bias. But how do we find this function $b$? Well, remember we spend quite sometime on convince you that we should be using deep learning in RL? DL provides an intuitive solution: we *learn* it with deep neural net! (However, you can still learn baseline with sampling) On the side note, for those who knows Advantage function in Q-learning,
+$$
+A(s, a) = Q(s, a) - V(s) 
+$$
+which is nothing more than just subtracting current $Q$ value by current value function. Notice the resemblance between this and baseline, you can interpret advantage function as an estimator with baseline embedded by default.
