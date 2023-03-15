@@ -90,35 +90,29 @@ $$
     J(\theta) = \int p\_{\theta } (\tau ) R(\tau )d\tau 
 $$
 This induce the REINFORCE algorithm where we estimate the policy gradient with likelihood ratio
-$$
-    \begin{aligned}
+$$\begin{aligned}
        \nabla \_{\theta } J(\theta) &= \nabla\_{\theta} \int p\_{\theta } (\tau ) R(\tau )d\tau \\ 
        &=  \int \nabla\_{\theta} p\_{\theta } (\tau ) R(\tau )d\tau \\
        &=   \int \frac{p \_{\theta}(\tau)}{p\_\theta (\tau) } \nabla\_{\theta} p\_{\theta } (\tau ) R(\tau )d\tau \\
        &=   \int \frac{p \_{\theta}(\tau)}{ p\_\theta (\tau) } \nabla\_{\theta} p\_{\theta } (\tau ) R(\tau )d\tau \\
        &=  \int p\_\theta (\tau) \nabla\_{\theta} \log p\_{\theta } (\tau ) R(\tau )d\tau \quad \text{REINFORCE trick} \\
        &= \mathbb{E } \_{p\_{\theta }(\tau )} [ \nabla\_{\theta} \log p\_{\theta }(\tau )R(\tau)]
-    \end{aligned}
-$$
+\end{aligned}$$
 Now we unroll the definition of $p\_{\theta }(\tau )$
 $$
 p\_{\theta }(\tau ) = p(s\_0) \prod^{T- 1 }\_{t= 0 }p(s\_{t+ 1} | s\_t, a\_t) \pi(a\_t |s\_t)
 $$
 where $p$ is the environment dynamics (an abuse of notation) and $\pi$ is the policy. Using property of log, we have 
-$$
-\begin{aligned}
+$$\begin{aligned}
 \log p\_{\theta }(\tau ) &= \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } (\log p(s\_{t+ 1} | s\_t, a\_t) + \log \pi(a\_t |s\_t)) \\
  \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) 
-\end{aligned}
-$$
+\end{aligned}$$
 Now, we assume a *model free* learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us  
-$$
-\begin{aligned}
+$$\begin{aligned}
  \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t))  \\ 
  &= 0 +  \sum^{T- 1 }\_{t= 0 } (0 +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) \\ 
  &= \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t)
-\end{aligned}
-$$
+\end{aligned}$$
 We can then rewrite our objectives as 
 $$
  \mathbb{E } \_{p\_{\theta }(\tau )} [ \nabla\_{\theta} \log p\_{\theta }(\tau )R(\tau)] =  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)]
