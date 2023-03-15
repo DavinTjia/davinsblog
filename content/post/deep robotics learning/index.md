@@ -10,11 +10,6 @@ tags:
 - Reinforcement Learning
 - Deep Learning
 - CSE599 G1 Note
-options:
-  katexOptions:
-    displayMode: true
-    macros: {}
-    extensions: ["aligned"]
 ---
 
 In this blog post, I would be going over some topics on deep reinforcement learning with focus on robotics learning. I would 
@@ -127,11 +122,4 @@ $$
   \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^N\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t=0}r(s\_t^i, a\_t^i)
 $$
 This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\tau} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent. 
-Maybe it worksCopy code
-$$
-\begin{aligned}
-f(x) &= (x+1)^2 \\
-&= x^2 + 2x + 1
-\end{aligned}
-$$
 
