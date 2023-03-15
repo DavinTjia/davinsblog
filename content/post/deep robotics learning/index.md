@@ -85,4 +85,4 @@ To use deep learning on reinforcement learning, identifying objective function f
 $$
 {E}_{\tau \sim \pi_{\theta}}
 $$
-no
+yes
