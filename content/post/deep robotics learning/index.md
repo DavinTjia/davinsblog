@@ -123,4 +123,8 @@ We can then rewrite our objectives as
 $$
  \mathbb{E } _{p_{\theta }(\tau )} [ \nabla_{\theta} \log p_{\theta }(\tau )R(\tau)] =  \mathbb{E } _{p_{\theta }(\tau )} [  \sum^{T-1 }_{t =0}   \nabla_{\theta} \log \pi(a_t |s_t) \sum^{T}_{t=0}r(s_t, a_t)]
 $$
-where the reward $R$ collected along the trajectory $\tau$ is given by $r(s_t, a_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. We can approximate 
+where the reward $R$ collected along the trajectory $\tau$ is given by $r(s_t, a_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. Although the later expectation seems intractable to compute,  we can approximate it with sampling !
+$$
+  \mathbb{E } _{p_{\theta }(\tau )} [  \sum^{T-1 }_{t =0}   \nabla_{\theta} \log \pi(a_t |s_t) \sum^{T}_{t=0}r(s_t, a_t)] \approx \frac{1 }{N }\sum^N_{i = 0 }\sum^N_{t = 0 }  \nabla_{\theta} \log \pi(a_t^i |s_t^i) \sum^{T}_{t=0}r(s_t^i, a_t^i)
+$$
+This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi_{\tau} (a_t | s_t)$ and then estimate the gradient $ \nabla_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla_{\theta}J(\theta)$ with gradient ascent. 
