@@ -83,5 +83,5 @@ are not (yet) good areas where DRL should be prioritized.
 
 To use deep learning on reinforcement learning, identifying objective function for optimization is the first crucial step. Recall that in RL we have a policy $\pi$ that takes a state $s$ as input and output an action $a$. The hope is that the trajectories $\tau$'s (a sequence of states and actions) generated according $\pi$ would optimize the return $r$. This gives us
 $$
-\max_{\theta} \mathbb{E } _{\tau \sim \pi_{\theta}} [\sum^T_{t = 0 } r (s_t, a_t)]
+[\sum^T_{t = 0 } r (s_t, a_t)]
 $$
