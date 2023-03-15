@@ -129,3 +129,5 @@ $$
 $$
 This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\tau} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent. 
 
+Check
+
