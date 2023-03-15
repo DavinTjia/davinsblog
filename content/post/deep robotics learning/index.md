@@ -119,7 +119,47 @@ $$
 $$
 where the reward $R$ collected along the trajectory $\tau$ is given by $r(s\_t, a\_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. Although the later expectation seems intractable to compute,  we can approximate it with sampling !
 $$
-  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^N\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t=0}r(s\_t^i, a\_t^i)
+  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=0}r(s\_{t'}^i, a\_{t'}^i)
 $$
-This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\tau} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent. 
+This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\theta} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent:
+```
+def REINFORCE:
+  sample tau from pi_theta 
+  gradient <- estimated by sampling
+  theta <- current theta + lr * gradient
+```
+In plain word, we want to select good data and then increase the likelihood of selecting good data. While policy gradient is unbiased, it is nontheless a *high variance* estimator. Because at one time we use a single sample (one trajectory) estimate but we really want an averaged return (averages across many trajectories) estimate. 
 
+### Variance Reduction for PG
+The most simple way to address the problem of high variance is taken "causaility" in mind. Notice in the sampling equation, 
+$$
+ \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=0}r(s\_{t'}^i, a\_{t'}^i)
+$$
+the return is summing accross all $t' \in [0, T]$ at each time stamp. This means the trajectory depends on the past and the future, but at a given moment $t'$ what has been done has been done and we only care about the return we get in the future. Therefore, we can consider **return to go** by ignoring past term and update our sampling equation to 
+$$
+ \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=t}r(s\_{t'}^i, a\_{t'}^i)
+$$
+where we excluding past term and now $t' \in [t, T]$. This method, however, doesn't solve the problem of "arbitrary centering". When some part of the trajectories returns negative rewards and other part return positive rewards, it is clear where to center the distribution around actions where the reward is positive. In the scenario where all the rewards are positive (which is more common), every actions in the distribution would be pushed up. To select good actions, we need to be very precise about pushing up the good ones more than the other, which is difficult and has high variance. Now, what if instead of pushing up all actions, we push down the actions that are bad and pushed up the actions that are good even though they all receive positive rewards? Can we reduce the variance further. The idea is to introduce a current state dependent function, what we called **baseline** $b(s\_t)$, and subtracting it from the return sum in policy gradient. 
+$$
+ \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=t}[r(s\_{t'}^i, a\_{t'}^i) - b(s\_t)]
+$$
+Baseline allows us to center the return (at current state) to reduce the variance. But do we sacrifice lower variance with higher bias by introducing the baseline term? Actually, no. 
+$$
+\begin{aligned}
+  \int p\left(\tau \right) \nabla\_\theta \log \pi\_\theta\left(\tau \right)\left[\sum\_{t^{\prime}=t}^T r\left(\tau\right)-b\left(s\_t\right)\right] d\tau = &\int\_{\mathcal{S}} \int\_{\mathcal{A}} p\left(s\_t, a\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right)\left[\sum\_{t^{\prime}=t}^T r\left(s\_{t^{\prime}}, a\_{t^{\prime}}\right)-b\left(s\_t\right)\right] d s\_t d a\_t \\\ 
+  = &\int\_{\mathcal{S}} \int\_{\mathcal{A}} p\left(s\_t, a\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right)\left[\sum\_{t^{\prime}=t}^T r\left(s\_{t^{\prime}}, a\_{t^{\prime}}\right)\right] d s\_t d a\_t - \\\
+  &\int\_{\mathcal{S}} \int\_{\mathcal{A}} p\left(s\_t, a\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right) b\left(s\_t\right) d s\_t d a\_t
+\end{aligned}
+$$ 
+This means that if we can show the integral with baseline as the integrand is 0, it would mean this is still an unbiased estimator.
+$$
+\begin{aligned}
+\iint p\left(s\_t, a\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right)\left[b\left(s\_t\right)\right] d s\_t d a\_t &=\iint p\left(s\_t\right) \pi\_\theta\left(a\_t \mid s\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right)\left[b\left(s\_t\right)\right] d s\_t d a\_t \\\
+& =\int p\left(s\_t\right) b\left(s\_t\right) \int \pi\_\theta\left(a\_t \mid s\_t\right) \nabla\_\theta \log \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t \\\
+& =\int p\left(s\_t\right) b\left(s\_t\right) \int \nabla\_\theta \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t \\\ 
+&=\int p\left(s\_t\right) b\left(s\_t\right) \nabla\_\theta \int \pi\_\theta\left(a\_t \mid s\_t\right) d a\_t d s\_t \\\
+&=\int p\left(s\_t\right) b\left(s\_t\right) \nabla\_\theta(1) d s\_t \\\
+&=0
+\end{aligned}
+$$
+Indeed, this is a rare day in machine learning where adding the baseline term reduces the variance without trading off more bias.
