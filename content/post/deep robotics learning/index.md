@@ -104,7 +104,7 @@ p\_{\theta }(\tau ) = p(s\_0) \prod^{T- 1 }\_{t= 0 }p(s\_{t+ 1} | s\_t, a\_t) \p
 $$
 where $p$ is the environment dynamics (an abuse of notation) and $\pi$ is the policy. Using property of log, we have 
 $$\begin{aligned}
-\log p\_{\theta }(\tau ) &= \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } (\log p(s\_{t+ 1} | s\_t, a\_t) + \log \pi(a\_t |s\_t)) \\
+\log p\_{\theta }(\tau ) &= \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } (\log p(s\_{t+ 1} | s\_t, a\_t) + \log \pi(a\_t |s\_t)) \\\\\\
  \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) 
 \end{aligned}$$
 Now, we assume a *model free* learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us  
@@ -122,4 +122,5 @@ $$
   \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^N\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t=0}r(s\_t^i, a\_t^i)
 $$
 This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\tau} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent. 
+Maybe it worksCopy code
 
