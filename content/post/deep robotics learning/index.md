@@ -107,7 +107,7 @@ $$\begin{aligned}
 \log p\_{\theta }(\tau ) &= \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } (\log p(s\_{t+ 1} | s\_t, a\_t) + \log \pi(a\_t |s\_t)) \\\
  \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) 
 \end{aligned}$$
-Now, we assume a *model free* learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us  
+Now, we assume *model free* learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us  
 $$\begin{aligned}
  \nabla\_{\theta} \log p\_{\theta }(\tau ) &=  \nabla\_{\theta} \log p(s\_0) +  \sum^{T- 1 }\_{t= 0 } ( \nabla\_{\theta} \log p(s\_{t+ 1} | s\_t, a\_t) +  \nabla\_{\theta} \log \pi(a\_t |s\_t))  \\\\\\
  &= 0 +  \sum^{T- 1 }\_{t= 0 } (0 +  \nabla\_{\theta} \log \pi(a\_t |s\_t)) \\\\\\ 
@@ -135,7 +135,7 @@ The most simple way to address the problem of high variance is taken "causaility
 $$
  \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=0}r(s\_{t'}^i, a\_{t'}^i)
 $$
-the return is summing accross all $t' \in [0, T]$ at each time stamp. This means the trajectory depends on the past and the future, but at a given moment $t'$ what has been done has been done and we only care about the return we get in the future. Therefore, we can consider **return to go** by ignoring past term and update our sampling equation to 
+the return is summing accross all $t' \in [0, T]$ at each time stamp $t$. This means the trajectory depends on the past and the future, but at a given moment $t'$ what has been done has been done and we only care about the return we get in the future. Therefore, we can consider **return to go** by ignoring past term and update our sampling equation to 
 $$
  \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=t}r(s\_{t'}^i, a\_{t'}^i)
 $$
@@ -162,7 +162,7 @@ $$
 &=0 \quad \text{derivative w.r.t any number is 0}
 \end{aligned}
 $$
-Indeed, this is a rare day in machine learning where adding the baseline term reduces the variance without trading off more bias. But how do we find this function $b$? Well, remember we spend quite sometime on convince you that we should be using deep learning in RL? DL provides an intuitive solution: we *learn* it with deep neural net! (However, you can still learn baseline with sampling) On the side note, for those who knows Advantage function in Q-learning,
+Indeed, this is a rare day in machine learning where adding the baseline term reduces the variance without trading off more bias. But how do we find this function $b$? Well, remember we spend quite sometime on convincing you that we should be using deep learning in RL? DL provides an intuitive solution: we *learn* it with deep neural net! (However, you can still learn baseline with sampling) On the side note, for those who knows Advantage function in Q-learning,
 $$
 A(s, a) = Q(s, a) - V(s) 
 $$
