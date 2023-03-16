@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Reinforcement Learning on Davin Tjia</title><link>https://davintjia.github.io/tags/reinforcement-learning/</link><description>Recent content in Reinforcement Learning on Davin Tjia</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 07 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://davintjia.github.io/tags/reinforcement-learning/index.xml" rel="self" type="application/rss+xml"/><item><title>Deep Robotics Learning (1) - Introduction and Policy Gradient</title><link>https://davintjia.github.io/p/drl/</link><pubDate>Tue, 07 Mar 2023 00:00:00 +0000</pubDate><guid>https://davintjia.github.io/p/drl/</guid><description>&lt;img src="https://davintjia.github.io/p/drl/cover.jpg" alt="Featured image of post Deep Robotics Learning (1) - Introduction and Policy Gradient" />&lt;p>In this blog post, I would be going over some topics on deep reinforcement learning with focus on robotics learning. I would
+expect this to be spanned across a series of posts. The content of these posts is my takeaway and additional exploration
+on the topics taught in &lt;a class="link" href="https://courses.cs.washington.edu/courses/cse599g/23wi/" target="_blank" rel="noopener"
+>CSE599 G1&lt;/a> at University of Washington
+by &lt;a class="link" href="https://homes.cs.washington.edu/~abhgupta/" target="_blank" rel="noopener"
+>Abishek Gupta&lt;/a>. Abishek is such a great teacher and this is such a great
+class that I think it deserves documentation of some form. That is the motivations of this blog posts series.&lt;/p>
+&lt;p>&lt;strong>Disclaimer&lt;/strong>: if there is any error in this blog posts, it is entirely my mistakes and my misunderstanding, but not
+the results of the slides of the lectures or Abhishek Gupta&amp;rsquo;s delivery. Please contact me if you have any concerns or
+questions about the content of this post. Thank you!&lt;/p>
+&lt;h2 id="introduction">Introduction&lt;/h2>
+&lt;p>To start, I would like to discuss some motivation on why reinforcement learning and why deep learning.&lt;/p>
+&lt;p>Although the concepts of learning is not new, the field robotics have much longer history in the classical methods. However, without learning, robotics is a much more complicated and specific tasks and requires multiple
+layers of engineering across different discipline, For example, robots that have been built and coded to navigate one
+environment might fail entirely at another (although similar) environment. This is because hard coded functionality,
+perception, and planning is much less generalizable in exchange for precision and reliability. However, such domain-specific
+design has many draw backs. It is much less economically justifiable (than, says, deploy a real human) and less likely
+to have a wide-spread deployment. This is where the motivation of learning comes in. Instead of building a finite state
+machine that transitions based on tasks, it is much better to train a model that would adapt based on the diversity in
+the data. Realistically speaking, the most likely solutions would fall in somewhere in between: we would like to
+modularize robotic engineering where each module perhaps consists of some learned models that are good at a tasks but
+are more generalization than state machine.&lt;/p>
+&lt;p>Hopefully, this would convince you a bit on maybe we should explore the possibilities of using learning in robotics.
+Assuming that you are buying the concepts of learning, you might want to ask why reinforcement learning (RL)? Supervised
+learning is much more extensively studied and seems to work phenomenonly well based on recent progress on CV and NLP.
+For supervised learning to perform well, some typical requires include 1. the data much be collected iid from the
+distribution 2. a lot of data, like a lot of data, as much as possible 3. well labeled data. These requirements
+do not fit well with the nature of robotic tasks. For 1., robotics tasks is usually sequential, that means it is not iid.
+For 2, it is exponentially more difficult to collect data. Different labs use different robots, under different
+environments, and with different calibration. There is lack of a general real-world data set that most researchers
+generally agree on like ImageNet in CV in early 2010s. For 3., it is hard to label the data. For example, a state
+might be good in one sequence of action but might be horrible in another sequence of action. The label of a particular
+data points need to take in multiple factors for considerations such as current goal, current state and available actions,
+and current trajectory. This make supervised learning generally an unsuitable way for robot to learn novel tasks.&lt;/p>
+&lt;p>Reinforcement learning on the other hand is a much more natural way to learn a sequence of action for a goal. In
+psychology there are two main category of conditioning: classical and operant. Classical conditioning is very well
+known thanks to Pavlov&amp;rsquo;s dog. Operant conditioning, in simple term, refers to using rewards or punishments to incentive
+good behaviors. B.F. Skinner, one of the main figure in behavior psychology, believes that all behavior is learned and
+novel reinforcement shapes novel behaviors. Now, if only there is a way that we can use rewards or punishments to
+reinforce the robots to behave. Reinforcement learning perfectly fits that description. (I would assume
+most readers have basic knowledge in RL from now on).&lt;/p>
+&lt;p>If I successfully (kinda) convince you that learning, specifically reinforcement learning, might be
+part of the solution to robotics, the next step is to get you believe that we should also combine
+deep learning with RL. One most obvious example is &lt;a class="link" href="https://www.nature.com/articles/nature16961" target="_blank" rel="noopener"
+>AlphaGo&lt;/a>.
+The main ideas of AlphaGo is combining deep Q-learning with Monte Carlo Tree Search (MCTS). A
+non-neural way to do Q-learning is to uses a dictionary (or some other cleverer data structure) to
+store the values of all the state-action pairs. However, this quickly become intractable when the
+possible combinations exceed the number of atoms in the universe like the game of Go. It would be
+much better if we have a parameterized function that could takes in state-action pairs and spits out
+their (estimated) values. Similarly, hand-crafting the agents and models are difficult and expensive.
+Using a neural network to represent the models would be much simpler to do (sometimes it is as
+easy as importing an out-of-the-box ResNet from the library!).&lt;/p>
+&lt;p>Now at the end of introduction, I would also like to raise some counterarguments of why we shouldn&amp;rsquo;t
+always be using deep reinforcement learning. Typical problems with deep learning such as low
+interpretability, data inefficiency, and sensitivity to hyperparameters still apply. In addition,
+deep reinforcement learning (or RL in general) are not suitable for tasks that requires high precisions.
+The values from the output is often just an estimation (albeit a good one) and many other factors
+including sampling strategy can all affect the final trajectories. In industry such as manufacturing
+where a robot only needs to master one tasks well and efficiently or medicine where safety and interpretability is critical
+are not (yet) good areas where DRL should be prioritized.&lt;/p>
+&lt;h2 id="policy-gradient">Policy Gradient&lt;/h2>
+&lt;p>To use deep learning on reinforcement learning, identifying objective function for optimization is the first crucial step. Recall that in RL we have a policy $\pi$ that takes a state $s$ as input and output an action $a$. The hope is that the trajectories $\tau$&amp;rsquo;s (a sequence of states and actions) generated according $\pi$ would optimize the return $r$. This gives us
+$$
+\max_{\theta} \mathbb{E}_{\tau \sim \pi_{\theta}} [\sum^T_{t = 0 } r (s_t, a_t)]
+$$
+There are many techniques that can be used to optimize over this objective functions. Different techniques requires different modifications to the objectives and results in different algorithms. Here, we would be focusing on using gradient &lt;em>asscent&lt;/em>, which in the setting of RL is often known as &lt;strong>policy gradient&lt;/strong>. Equivalently, the continuous version of the sum above is given by
+$$
+J(\theta) = \int p_{\theta } (\tau ) R(\tau )d\tau
+$$
+This induce the REINFORCE algorithm where we estimate the policy gradient with likelihood ratio
+$$\begin{aligned}
+\nabla _{\theta } J(\theta) &amp;amp;= \nabla_{\theta} \int p_{\theta } (\tau ) R(\tau )d\tau \\\
+&amp;amp;= \int \nabla_{\theta} p_{\theta } (\tau ) R(\tau )d\tau \\\
+&amp;amp;= \int \frac{p _{\theta}(\tau)}{p_\theta (\tau) } \nabla_{\theta} p_{\theta } (\tau ) R(\tau )d\tau \\\
+&amp;amp;= \int \frac{p _{\theta}(\tau)}{ p_\theta (\tau) } \nabla_{\theta} p_{\theta } (\tau ) R(\tau )d\tau \\\
+&amp;amp;= \int p_\theta (\tau) \nabla_{\theta} \log p_{\theta } (\tau ) R(\tau )d\tau \quad \text{REINFORCE trick} \\\
+&amp;amp;= \mathbb{E } _{p_{\theta }(\tau )} [ \nabla_{\theta} \log p_{\theta }(\tau )R(\tau)]
+\end{aligned}$$
+Now we unroll the definition of $p_{\theta }(\tau )$
+$$
+p_{\theta }(\tau ) = p(s_0) \prod^{T- 1 }_{t= 0 }p(s_{t+ 1} | s_t, a_t) \pi(a_t |s_t)
+$$
+where $p$ is the environment dynamics (an abuse of notation) and $\pi$ is the policy. Using property of log, we have
+$$\begin{aligned}
+\log p_{\theta }(\tau ) &amp;amp;= \log p(s_0) + \sum^{T- 1 }_{t= 0 } (\log p(s_{t+ 1} | s_t, a_t) + \log \pi(a_t |s_t)) \\
+\nabla_{\theta} \log p_{\theta }(\tau ) &amp;amp;= \nabla_{\theta} \log p(s_0) + \sum^{T- 1 }_{t= 0 } ( \nabla_{\theta} \log p(s_{t+ 1} | s_t, a_t) + \nabla_{\theta} \log \pi(a_t |s_t))
+\end{aligned}$$
+Now, we assume &lt;em>model free&lt;/em> learning, that is, only the policy is parameterized. This means the dynamic $p$ is independent of $\theta$, which leaves us&lt;br>
+$$\begin{aligned}
+\nabla_{\theta} \log p_{\theta }(\tau ) &amp;amp;= \nabla_{\theta} \log p(s_0) + \sum^{T- 1 }_{t= 0 } ( \nabla_{\theta} \log p(s_{t+ 1} | s_t, a_t) + \nabla_{\theta} \log \pi(a_t |s_t)) \\\
+&amp;amp;= 0 + \sum^{T- 1 }_{t= 0 } (0 + \nabla_{\theta} \log \pi(a_t |s_t)) \\\
+&amp;amp;= \sum^{T-1 }_{t =0} \nabla_{\theta} \log \pi(a_t |s_t)
+\end{aligned}$$
+We can then rewrite our objectives as
+$$
+\mathbb{E } _{p_{\theta }(\tau )} [ \nabla_{\theta} \log p_{\theta }(\tau )R(\tau)] = \mathbb{E } _{p_{\theta }(\tau )} [ \sum^{T-1 }_{t =0} \nabla_{\theta} \log \pi(a_t |s_t) \sum^{T}_{t=0}r(s_t, a_t)]
+$$
+where the reward $R$ collected along the trajectory $\tau$ is given by $r(s_t, a_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. Although the later expectation seems intractable to compute, we can approximate it with sampling !
+$$
+\mathbb{E } _{p_{\theta }(\tau )} [ \sum^{T-1 }_{t =0} \nabla_{\theta} \log \pi(a_t |s_t) \sum^{T}_{t=0}r(s_t, a_t)] \approx \frac{1 }{N }\sum^N_{i = 0 }\sum^T_{t = 0 } \nabla_{\theta} \log \pi(a_t^i |s_t^i) \sum^{T}_{t^{\prime}=0}r(s_{t^{\prime}}^i, a_{t^{\prime}}^i)
+$$
+This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi_{\theta} (a_t | s_t)$ and then estimate the gradient $ \nabla_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla_{\theta}J(\theta)$ with gradient ascent:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">def REINFORCE:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sample tau from pi_theta
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> gradient &amp;lt;- estimated by sampling
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> theta &amp;lt;- current theta + lr * gradient
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>In plain word, we want to select good data and then increase the likelihood of selecting good data. While policy gradient is unbiased, it is nontheless a &lt;em>high variance&lt;/em> estimator. Because at one time we use a single sample (one trajectory) estimate but we really want an averaged return (averages across many trajectories) estimate.&lt;/p>
+&lt;h3 id="variance-reduction-for-pg">Variance Reduction for PG&lt;/h3>
+&lt;p>The most simple way to address the problem of high variance is taken &amp;ldquo;causaility&amp;rdquo; in mind. Notice in the sampling equation,
+$$
+\frac{1 }{N }\sum^N_{i = 0 }\sum^T_{t = 0 } \nabla_{\theta} \log \pi(a_t^i |s_t^i) \sum^{T}_{t^{\prime}=0}r(s_{t^{\prime}}^i, a_{t^{\prime}}^i)
+$$
+the return is summing accross all $t^{\prime} \in [0, T]$ at each time stamp $t$. This means the trajectory depends on the past and the future, but at a given moment $t^{\prime}$ what has been done has been done and we only care about the return we get in the future. Therefore, we can consider &lt;strong>return to go&lt;/strong> by ignoring past term and update our sampling equation to
+$$
+\frac{1 }{N }\sum^N_{i = 0 }\sum^T_{t = 0 } \nabla_{\theta} \log \pi(a_t^i |s_t^i) \sum^{T}_{t^{\prime}=t}r(s_{t^{\prime}}^i, a_{t^{\prime}}^i)
+$$
+where we excluding past term and now $t^{\prime} \in [t, T]$. This method, however, doesn&amp;rsquo;t solve the problem of &amp;ldquo;arbitrary centering&amp;rdquo;. When some part of the trajectories returns negative rewards and other part return positive rewards, it is clear where to center the distribution around actions where the reward is positive. In the scenario where all the rewards are positive (which is more common), every actions in the distribution would be pushed up. To select good actions, we need to be very precise about pushing up the good ones more than the other, which is difficult and has high variance. Now, what if instead of pushing up all actions, we push down the actions that are bad and pushed up the actions that are good even though they all receive positive rewards? Can we reduce the variance further. The idea is to introduce a current state dependent function, what we called &lt;strong>baseline&lt;/strong> $b(s_t)$, and subtracting it from the return sum in policy gradient.
+$$
+\frac{1 }{N }\sum^N_{i = 0 }\sum^T_{t = 0 } \nabla_{\theta} \log \pi(a_t^i |s_t^i) \sum^{T}_{t^{\prime}=t}[r(s_{t^{\prime}}^i, a_{t^{\prime}}^i) - b(s_t)]
+$$
+Baseline allows us to center the return (at current state) to reduce the variance. But do we sacrifice lower variance with higher bias by introducing the baseline term? Actually, no.
+$$
+\begin{aligned}
+\int p\left(\tau \right) \nabla_\theta \log \pi_\theta\left(\tau \right)\left[\sum_{t^{\prime}=t}^T r\left(\tau\right)-b\left(s_t\right)\right] d\tau = &amp;amp;\int_{\mathcal{S}} \int_{\mathcal{A}} p\left(s_t, a_t\right) \nabla_\theta \log \pi_\theta\left(a_t \mid s_t\right)\left[\sum_{t^{\prime}=t}^T r\left(s_{t^{\prime}}, a_{t^{\prime}}\right)-b\left(s_t\right)\right] d s_t d a_t \\
+= &amp;amp;\int_{\mathcal{S}} \int_{\mathcal{A}} p\left(s_t, a_t\right) \nabla_\theta \log \pi_\theta\left(a_t \mid s_t\right)\left[\sum_{t^{\prime}=t}^T r\left(s_{t^{\prime}}, a_{t^{\prime}}\right)\right] d s_t d a_t - \\
+&amp;amp;\int_{\mathcal{S}} \int_{\mathcal{A}} p\left(s_t, a_t\right) \nabla_\theta \log \pi_\theta\left(a_t \mid s_t\right) b\left(s_t\right) d s_t d a_t
+\end{aligned}
+$$
+This means that if we can show the integral with baseline as the integrand is 0, it would mean this is still an unbiased estimator.
+$$
+\begin{aligned}
+\iint p\left(s_t, a_t\right) \nabla_\theta \log \pi_\theta\left(a_t \mid s_t\right)\left[b\left(s_t\right)\right] d s_t d a_t &amp;amp;=\iint p\left(s_t\right) \pi_\theta\left(a_t \mid s_t\right) \nabla_\theta \log \pi_\theta\left(a_t \mid s_t\right)\left[b\left(s_t\right)\right] d s_t d a_t \\
+&amp;amp; =\int p\left(s_t\right) b\left(s_t\right) \int \pi_\theta\left(a_t \mid s_t\right) \nabla_\theta \log \pi_\theta\left(a_t \mid s_t\right) d a_t d s_t \\
+&amp;amp; =\int p\left(s_t\right) b\left(s_t\right) \int \nabla_\theta \pi_\theta\left(a_t \mid s_t\right) d a_t d s_t \\
+&amp;amp;=\int p\left(s_t\right) b\left(s_t\right) \nabla_\theta \int \pi_\theta\left(a_t \mid s_t\right) d a_t d s_t\\
+&amp;amp;=\int p\left(s_t\right) b\left(s_t\right) \nabla_\theta(1) d s_t \quad \text{$\pi$ is a valid probability distribution}\\
+&amp;amp;=0 \quad \text{derivative w.r.t any number is 0}
+\end{aligned}
+$$
+Indeed, this is a rare day in machine learning where adding the baseline term reduces the variance without trading off more bias. But how do we find this function $b$? Well, remember we spend quite sometime on convincing you that we should be using deep learning in RL? DL provides an intuitive solution: we &lt;em>learn&lt;/em> it with deep neural net! (However, you can still learn baseline with sampling) On the side note, for those who knows Advantage function in Q-learning,
+$$
+A(s, a) = Q(s, a) - V(s)
+$$
+which is nothing more than just subtracting current $Q$ value by current value function. Notice the resemblance between this and baseline, you can interpret advantage function as an estimator with baseline embedded by default.&lt;/p></description></item></channel></rss>
