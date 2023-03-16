@@ -119,7 +119,7 @@ $$
 $$
 where the reward $R$ collected along the trajectory $\tau$ is given by $r(s\_t, a\_t)$ at each time stamp from $t = 0$ to the horizon $t=T$. Although the later expectation seems intractable to compute,  we can approximate it with sampling !
 $$
-  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=0}r(s\_{t'}^i, a\_{t'}^i)
+  \mathbb{E } \_{p\_{\theta }(\tau )} [  \sum^{T-1 }\_{t =0}   \nabla\_{\theta} \log \pi(a\_t |s\_t) \sum^{T}\_{t=0}r(s\_t, a\_t)] \approx \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t^{\prime}=0}r(s\_{t^{\prime}}^i, a\_{t^{\prime}}^i)
 $$
 This is essentially gives us the REINFORCE algorithm: you sample trajectories $\tau^i$ from current policy $\pi\_{\theta} (a\_t | s\_t)$ and then estimate the gradient $ \nabla\_{\theta}J(\theta)$ and then we update the current parameter $\theta \leftarrow \theta + \nabla\_{\theta}J(\theta)$ with gradient ascent:
 ```
@@ -133,15 +133,15 @@ In plain word, we want to select good data and then increase the likelihood of s
 ### Variance Reduction for PG
 The most simple way to address the problem of high variance is taken "causaility" in mind. Notice in the sampling equation, 
 $$
- \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=0}r(s\_{t'}^i, a\_{t'}^i)
+ \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t^{\prime}=0}r(s\_{t^{\prime}}^i, a\_{t^{\prime}}^i)
 $$
-the return is summing accross all $t' \in [0, T]$ at each time stamp $t$. This means the trajectory depends on the past and the future, but at a given moment $t'$ what has been done has been done and we only care about the return we get in the future. Therefore, we can consider **return to go** by ignoring past term and update our sampling equation to 
+the return is summing accross all $t^{\prime} \in [0, T]$ at each time stamp $t$. This means the trajectory depends on the past and the future, but at a given moment $t^{\prime}$ what has been done has been done and we only care about the return we get in the future. Therefore, we can consider **return to go** by ignoring past term and update our sampling equation to 
 $$
- \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=t}r(s\_{t'}^i, a\_{t'}^i)
+ \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t^{\prime}=t}r(s\_{t^{\prime}}^i, a\_{t^{\prime}}^i)
 $$
-where we excluding past term and now $t' \in [t, T]$. This method, however, doesn't solve the problem of "arbitrary centering". When some part of the trajectories returns negative rewards and other part return positive rewards, it is clear where to center the distribution around actions where the reward is positive. In the scenario where all the rewards are positive (which is more common), every actions in the distribution would be pushed up. To select good actions, we need to be very precise about pushing up the good ones more than the other, which is difficult and has high variance. Now, what if instead of pushing up all actions, we push down the actions that are bad and pushed up the actions that are good even though they all receive positive rewards? Can we reduce the variance further. The idea is to introduce a current state dependent function, what we called **baseline** $b(s\_t)$, and subtracting it from the return sum in policy gradient. 
+where we excluding past term and now $t^{\prime} \in [t, T]$. This method, however, doesn't solve the problem of "arbitrary centering". When some part of the trajectories returns negative rewards and other part return positive rewards, it is clear where to center the distribution around actions where the reward is positive. In the scenario where all the rewards are positive (which is more common), every actions in the distribution would be pushed up. To select good actions, we need to be very precise about pushing up the good ones more than the other, which is difficult and has high variance. Now, what if instead of pushing up all actions, we push down the actions that are bad and pushed up the actions that are good even though they all receive positive rewards? Can we reduce the variance further. The idea is to introduce a current state dependent function, what we called **baseline** $b(s\_t)$, and subtracting it from the return sum in policy gradient. 
 $$
- \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t'=t}[r(s\_{t'}^i, a\_{t'}^i) - b(s\_t)]
+ \frac{1 }{N }\sum^N\_{i = 0 }\sum^T\_{t = 0 }  \nabla\_{\theta} \log \pi(a\_t^i |s\_t^i) \sum^{T}\_{t^{\prime}=t}[r(s\_{t^{\prime}}^i, a\_{t^{\prime}}^i) - b(s\_t)]
 $$
 Baseline allows us to center the return (at current state) to reduce the variance. But do we sacrifice lower variance with higher bias by introducing the baseline term? Actually, no. 
 $$
